@@ -1,5 +1,5 @@
 def fizzbuzz(cntnum, num1, num2)
-  cntnum.times.each do |i|
+  cntnum.times do |i|
     num = i + 1
     if num % num1 == 0 && num % num2 == 0
       puts "FizzBuzz"
