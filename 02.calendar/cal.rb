@@ -2,6 +2,10 @@ require "optparse"
 require "date"
 
 class Cal
+
+  CHARNUM_OF_WEEK = ("11 " * 7).length - 1
+  DAY_OF_WEEK_STRING = "日 月 火 水 木 金 土"
+
   def initialize
     @year = Date.today.year
     @month = Date.today.month
@@ -20,7 +24,7 @@ class Cal
     exit false
   end
 
-  def chk_argv
+  def parse_arguments
     begin
       options = ARGV.getopts('y:', 'm:')
     rescue OptionParser::MissingArgument
@@ -39,36 +43,28 @@ class Cal
     end
   end
 
-  def disp
-    # Preparing display varibles
-    charnum_of_week = ("11 " * 7).length - 1
-    day_of_week_str = "日 月 火 水 木 金 土"
-    puts "#{@month}月 #{@year}".center(charnum_of_week)
-    firstday = Date.new(@year,@month,1)
-    lastday = Date.new(@year,@month,-1)
-    first_days_day_of_week = firstday.wday
-    puts day_of_week_str
-    day_num = 0
-    weekstr = ""
-    # Construct string
-    lastday.day.times.each do |i|
-      day_num = i + 1
-      day = Date.new(@year,@month,day_num)
-      if day.saturday?
-        weekstr += day_num.to_s.rjust(2)
-        puts weekstr.rjust(charnum_of_week)
-        weekstr = ""
-      elsif day == lastday
-        weekstr += day_num.to_s
-        puts weekstr
-        weekstr = ""
-      else
-        weekstr += day_num.to_s.rjust(2) + " "
+  def prepare_display
+    @firstday = Date.new(@year,@month,1)
+    @lastday = Date.new(@year,@month,-1)
+  end
+
+  def display
+    prepare_display
+    puts "#{@month}月 #{@year}".center(CHARNUM_OF_WEEK)
+    puts DAY_OF_WEEK_STRING
+    week_array = []
+    (@firstday..@lastday).each do |each_day|
+      week_array.push(each_day.day.to_s.rjust(2))
+      if each_day.saturday?
+        puts week_array.join(" ").rjust(CHARNUM_OF_WEEK)
+        week_array.clear
+      elsif each_day == @lastday
+        puts week_array.join(" ")
       end
     end
   end
 end
 
 cal = Cal.new
-cal.chk_argv
-cal.disp
+cal.parse_arguments
+cal.display
