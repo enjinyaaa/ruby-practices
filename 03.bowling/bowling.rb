@@ -1,53 +1,39 @@
 # frozen_string_literal: true
 
+def point_calc(point, first_add_times, second_add_times)
+  retval = point * (first_add_times + 1)
+  first_add_times = second_add_times
+  second_add_times = 0
+  [retval, first_add_times, second_add_times]
+end
+
 score = 0
 frame = 1
 round_point = 0
 first_shot = false
 first_add_times = 0
 second_add_times = 0
-
-def str2point(str)
-  if str == 'X'
-    10
-  else
-    str.to_i
-  end
-end
-
-def point_calc(point, first_add_times, second_add_times)
-  retval = point
-  if first_add_times
-    retval += point * first_add_times
-    first_add_times = second_add_times
-    second_add_times = 0
-  end
-  [retval, first_add_times, second_add_times]
-end
-
 ARGV[0].split(',').each do |p_str|
-  point = str2point(p_str)
-
+  point = p_str == 'X' ? 10 : p_str.to_i
   point_val, first_add_times, second_add_times = point_calc(point, first_add_times, second_add_times)
   score += point_val
 
-  if p_str == 'X' && point == 10
+  if p_str == 'X'
     if frame != 10
       first_add_times += 1
       second_add_times = 1
       frame += 1
     end
-  elsif !first_shot
+    next
+  end
+
+  if !first_shot
     round_point = point
     first_shot = true
   else
     first_shot = false
     round_point += point
-    first_add_times = if round_point == 10 && frame != 10
-                        1
-                      else
-                        0
-                      end
+    first_add_times = round_point == 10 && frame != 10 ? 1 : 0
     second_add_times = 0
     round_point = 0
     frame += 1
