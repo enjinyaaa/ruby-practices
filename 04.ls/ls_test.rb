@@ -13,15 +13,13 @@ class LsTest < Minitest::Test
       03   08
       04   09999
     TEXT
-    ARGV.replace([TEST_DIR_PATH])
-    assert_output(text) { ls }
+    assert_output(text) { ls([TEST_DIR_PATH]) }
   end
 
   def test_ls_nopath
     text = <<~TEXT
       ls.rb  ls_test.rb  test_dir
     TEXT
-    ARGV.replace([])
     assert_output(text) { ls }
   end
 end
