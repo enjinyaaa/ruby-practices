@@ -4,8 +4,8 @@ require 'minitest/autorun'
 require_relative './ls'
 
 class LsTest < Minitest::Test
-  TEST_DIR_PATH = './test_dir'
   def test_ls
+    test_dir_path = './test_dir'
     text = <<~TEXT
       000  05     fugafuga
       01   06     hoge
@@ -13,7 +13,13 @@ class LsTest < Minitest::Test
       03   08
       04   09999
     TEXT
-    assert_output(text) { ls([TEST_DIR_PATH]) }
+    assert_output(text) { ls([test_dir_path]) }
+  end
+
+  def test_ls_no_files
+    test_dir_path = './test_dir/.fuga'
+    text = ''
+    assert_output(text) { ls([test_dir_path]) }
   end
 
   def test_ls_nopath

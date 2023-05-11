@@ -4,30 +4,30 @@ require 'optparse'
 
 COLUMN_MAX = 3
 
-def filenames_to_columns(filenames, rows_num)
-  columns = Array.new(COLUMN_MAX) { [] }
-  filenames.each.with_index do |filename, index|
-    columns[index / rows_num] << filename
+def join_strings_by_row(rows, max_lengths_by_col)
+  rows.map do |row|
+    tmp_row = row.filter_map.with_index do |filename, index|
+      filename&.ljust(max_lengths_by_col[index])
+    end
+    tmp_row.join('  ').rstrip
   end
-  columns
 end
 
 def format_output_strings(filenames)
   rows_num = (filenames.length.to_f / COLUMN_MAX).ceil
-  columns = filenames_to_columns(filenames, rows_num)
+  return nil if rows_num.zero?
+
+  columns = filenames.each_slice(rows_num).map { |a| a }
   max_lengths_by_col = columns.map { |ary| ary.max_by(&:length)&.length }
-  Array.new(rows_num) do |row_i|
-    row = columns.filter_map.with_index do |column, col_i|
-      column[row_i]&.ljust(max_lengths_by_col[col_i]) unless max_lengths_by_col[col_i].nil?
-    end
-    row.join('  ').rstrip
-  end
+  rows = columns.map { |a| a + Array.new(rows_num - a.size, nil) }.transpose
+  join_strings_by_row(rows, max_lengths_by_col)
 end
 
 def ls(args = ARGV)
   filepath = args[0] || '.'
-  filenames = Dir.glob(File.join(filepath, '/*')).map { |path| File.basename(path) }
-  puts format_output_strings(filenames)
+  filenames = Dir.glob(File.join(filepath, '*')).map { |path| File.basename(path) }
+  output_strings = format_output_strings(filenames)
+  puts output_strings unless output_strings.nil?
 end
 
 ls if __FILE__ == $PROGRAM_NAME
