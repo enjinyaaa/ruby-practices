@@ -22,8 +22,13 @@ def format_output_strings(filenames)
 end
 
 def ls(args = ARGV)
+  opt = OptionParser.new
+  opt.on('-a')
+  options = {}
+  opt.parse!(args, into: options)
+  glob_flag = options[:a] ? File::FNM_DOTMATCH : 0
   filepath = args[0] || '.'
-  filenames = Dir.glob(File.join(filepath, '*')).map { |path| File.basename(path) }
+  filenames = Dir.glob(File.join(filepath, '*'), glob_flag).map { |path| File.basename(path) }
   puts format_output_strings(filenames) unless filenames.empty?
 end
 
