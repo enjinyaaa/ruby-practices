@@ -25,10 +25,10 @@ def ls(args = ARGV)
   opt = OptionParser.new
   opt.on('-a')
   options = {}
-  opt.parse!(args, into: options)
+  args = opt.parse(args, into: options)
   filepath = args[0] || '.'
   filenames = Dir.entries(filepath).sort
-  filenames.delete_if { |filename| filename =~ /^\..*/ } unless options[:a]
+  filenames = filenames.reject { |fname| fname.start_with?('.') } unless options[:a]
   puts format_output_strings(filenames) unless filenames.empty?
 end
 
