@@ -42,4 +42,17 @@ class LsTest < Minitest::Test
     TEXT
     assert_output(text) { ls([test_dir_path, option]) }
   end
+
+  def test_ls_with_r_option
+    test_dir_path = './test_dir'
+    option = '-r'
+    text = <<~TEXT
+      nyannyan  07  02
+      hoge      06  01
+      fugafuga  05  000
+      09999     04
+      08        03
+    TEXT
+    assert_output(text) { ls([test_dir_path, option]) }
+  end
 end
