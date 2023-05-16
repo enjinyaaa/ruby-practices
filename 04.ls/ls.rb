@@ -22,8 +22,13 @@ def format_output_strings(filenames)
 end
 
 def ls(args = ARGV)
+  opt = OptionParser.new
+  opt.on('-a')
+  options = {}
+  args = opt.parse(args, into: options)
   filepath = args[0] || '.'
-  filenames = Dir.glob(File.join(filepath, '*')).map { |path| File.basename(path) }
+  filenames = Dir.entries(filepath).sort
+  filenames = filenames.reject { |fname| fname.start_with?('.') } unless options[:a]
   puts format_output_strings(filenames) unless filenames.empty?
 end
 
