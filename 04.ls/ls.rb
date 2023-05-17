@@ -31,7 +31,12 @@ def ls(args = ARGV)
   filenames = Dir.entries(filepath).sort
   filenames = filenames.reverse if options[:r]
   filenames = filenames.reject { |fname| fname.start_with?('.') } unless options[:a]
-  puts format_output_strings(filenames) unless filenames.empty?
+  format_output_strings(filenames) unless filenames.empty?
 end
 
-ls if __FILE__ == $PROGRAM_NAME
+def ls_main(args = ARGV)
+  output_strings = ls(args)
+  puts output_strings unless output_strings.nil?
+end
+
+ls_main if __FILE__ == $PROGRAM_NAME
