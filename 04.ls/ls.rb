@@ -21,17 +21,27 @@ def format_output_strings(filenames)
   join_strings_by_row(rows, max_lengths_by_col)
 end
 
-def ls(args = ARGV)
+def args_option_parse(args)
   opt = OptionParser.new
   opt.on('-a')
   opt.on('-r')
   options = {}
   args = opt.parse(args, into: options)
-  filepath = args[0] || '.'
+  [args, options]
+end
+
+def ls(args = ARGV)
+  parsed_args, options = args_option_parse(args)
+  filepath = parsed_args[0] || '.'
   filenames = Dir.entries(filepath).sort
-  filenames = filenames.reverse if options[:r]
-  filenames = filenames.reject { |fname| fname.start_with?('.') } unless options[:a]
-  format_output_strings(filenames) unless filenames.empty?
+  reversed_filenames = filenames.reverse
+  rejected_filenames = filenames.reject { |fname| fname.start_with?('.') }
+  reversed_and_rejected_filenames = rejected_filenames.reverse
+  return format_output_strings(reversed_and_rejected_filenames) if options[:r] && !options[:a]
+  return format_output_strings(reversed_filenames) if options[:r]
+  return format_output_strings(filenames) if options[:a]
+
+  format_output_strings(rejected_filenames) unless rejected_filenames.empty?
 end
 
 def ls_main(args = ARGV)
