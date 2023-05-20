@@ -37,16 +37,16 @@ def ls(args = ARGV)
   reversed_filenames = filenames.reverse
   rejected_filenames = filenames.reject { |fname| fname.start_with?('.') }
   reversed_and_rejected_filenames = rejected_filenames.reverse
-  return format_output_strings(reversed_and_rejected_filenames) if options[:r] && !options[:a]
-  return format_output_strings(reversed_filenames) if options[:r]
-  return format_output_strings(filenames) if options[:a]
+  return format_output_strings(reversed_and_rejected_filenames).join("\n") + "\n" if options[:r] && !options[:a]
+  return format_output_strings(reversed_filenames).join("\n") + "\n" if options[:r]
+  return format_output_strings(filenames).join("\n") + "\n" if options[:a]
 
-  format_output_strings(rejected_filenames) unless rejected_filenames.empty?
+  format_output_strings(rejected_filenames).join("\n") + "\n" unless rejected_filenames.empty?
 end
 
 def ls_main(args = ARGV)
   output_strings = ls(args)
-  puts output_strings unless output_strings.nil?
+  print output_strings unless output_strings.nil?
 end
 
 ls_main if __FILE__ == $PROGRAM_NAME
