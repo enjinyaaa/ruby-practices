@@ -21,7 +21,7 @@ def format_output_strings(filenames)
   join_strings_by_row(rows, max_lengths_by_col)
 end
 
-def args_option_parse(args)
+def parse_args_option(args)
   opt = OptionParser.new
   opt.on('-a')
   opt.on('-r')
@@ -30,23 +30,30 @@ def args_option_parse(args)
   [args, options]
 end
 
+def reverse_filenames_proc
+  ->(filenames) { filenames.reverse }
+end
+
+def reject_dot_filenames_proc
+  ->(filenames) { filenames.reject { |fname| fname.start_with?('.') } }
+end
+
 def ls(args = ARGV)
-  parsed_args, options = args_option_parse(args)
+  parsed_args, options = parse_args_option(args)
   filepath = parsed_args[0] || '.'
   filenames = Dir.entries(filepath).sort
-  reversed_filenames = filenames.reverse
-  rejected_filenames = filenames.reject { |fname| fname.start_with?('.') }
-  reversed_and_rejected_filenames = rejected_filenames.reverse
-  return format_output_strings(reversed_and_rejected_filenames).join("\n") + "\n" if options[:r] && !options[:a]
-  return format_output_strings(reversed_filenames).join("\n") + "\n" if options[:r]
-  return format_output_strings(filenames).join("\n") + "\n" if options[:a]
-
-  format_output_strings(rejected_filenames).join("\n") + "\n" unless rejected_filenames.empty?
+  processes = []
+  processes << reverse_filenames_proc if options[:r]
+  processes << reject_dot_filenames_proc unless options[:a]
+  processes.each do |process|
+    filenames = process.call(filenames)
+  end
+  "#{format_output_strings(filenames).join("\n")}\n" unless filenames.empty?
 end
 
 def ls_main(args = ARGV)
   output_strings = ls(args)
-  print output_strings unless output_strings.nil?
+  print output_strings
 end
 
 ls_main if __FILE__ == $PROGRAM_NAME
