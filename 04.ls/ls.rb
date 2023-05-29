@@ -30,24 +30,12 @@ def parse_args_option(args)
   [args, options]
 end
 
-def reverse_filenames_proc
-  ->(filenames) { filenames.reverse }
-end
-
-def reject_dot_filenames_proc
-  ->(filenames) { filenames.reject { |fname| fname.start_with?('.') } }
-end
-
 def ls(args = ARGV)
   parsed_args, options = parse_args_option(args)
   filepath = parsed_args[0] || '.'
   filenames = Dir.entries(filepath).sort
-  processes = []
-  processes << reverse_filenames_proc if options[:r]
-  processes << reject_dot_filenames_proc unless options[:a]
-  processes.each do |process|
-    filenames = process.call(filenames)
-  end
+  filenames = filenames.reject { |fname| fname.start_with?('.') } unless options[:a]
+  filenames = filenames.reverse if options[:r]
   "#{format_output_strings(filenames).join("\n")}\n" unless filenames.empty?
 end
 
