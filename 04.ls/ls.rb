@@ -30,29 +30,13 @@ def parse_args_option(args)
   [args, options]
 end
 
-def option_a_process(filenames, options)
-  if !options[:a]
-    filenames.reject { |fname| fname.start_with?('.') } unless options[:a]
-  else
-    filenames
-  end
-end
-
-def option_r_process(filenames, options)
-  if options[:r]
-    filenames.reverse
-  else
-    filenames
-  end
-end
-
 def ls(args = ARGV)
   parsed_args, options = parse_args_option(args)
   filepath = parsed_args[0] || '.'
   filenames = Dir.entries(filepath).sort
-  option_a_processed_fnames = option_a_process(filenames, options)
-  option_r_processed_fnames = option_r_process(option_a_processed_fnames, options)
-  "#{format_output_strings(option_r_processed_fnames).join("\n")}\n" unless option_r_processed_fnames.empty?
+  rejected_filenames = options[:a] ? filenames : filenames.reject { |fname| fname.start_with?('.') }
+  reversed_filenames = options[:r] ? rejected_filenames.reverse : rejected_filenames
+  "#{format_output_strings(reversed_filenames).join("\n")}\n" unless reversed_filenames.empty?
 end
 
 print ls(ARGV) if __FILE__ == $PROGRAM_NAME
