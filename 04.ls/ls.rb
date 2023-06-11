@@ -34,9 +34,9 @@ def ls(args = ARGV)
   parsed_args, options = parse_args_option(args)
   filepath = parsed_args[0] || '.'
   filenames = Dir.entries(filepath).sort
-  checked_filenames_by_option_a = options[:a] ? filenames : filenames.reject { |fname| fname.start_with?('.') }
-  checked_filenames_by_option_r = options[:r] ? checked_filenames_by_option_a.reverse : checked_filenames_by_option_a
-  "#{format_output_strings(checked_filenames_by_option_r).join("\n")}\n" unless checked_filenames_by_option_r.empty?
+  target_filenames = options[:a] ? filenames : filenames.reject { |fname| fname.start_with?('.') }
+  sorted_filenames = options[:r] ? target_filenames.reverse : target_filenames
+  "#{format_output_strings(sorted_filenames).join("\n")}\n" unless sorted_filenames.empty?
 end
 
 print ls(ARGV) if __FILE__ == $PROGRAM_NAME
