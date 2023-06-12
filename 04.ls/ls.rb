@@ -21,15 +21,22 @@ def format_output_strings(filenames)
   join_strings_by_row(rows, max_lengths_by_col)
 end
 
-def ls(args = ARGV)
+def parse_args_option(args)
   opt = OptionParser.new
   opt.on('-a')
+  opt.on('-r')
   options = {}
   args = opt.parse(args, into: options)
-  filepath = args[0] || '.'
-  filenames = Dir.entries(filepath).sort
-  filenames = filenames.reject { |fname| fname.start_with?('.') } unless options[:a]
-  puts format_output_strings(filenames) unless filenames.empty?
+  [args, options]
 end
 
-ls if __FILE__ == $PROGRAM_NAME
+def ls(args = ARGV)
+  parsed_args, options = parse_args_option(args)
+  filepath = parsed_args[0] || '.'
+  filenames = Dir.entries(filepath).sort
+  target_filenames = options[:a] ? filenames : filenames.reject { |fname| fname.start_with?('.') }
+  sorted_filenames = options[:r] ? target_filenames.reverse : target_filenames
+  "#{format_output_strings(sorted_filenames).join("\n")}\n" unless sorted_filenames.empty?
+end
+
+print ls(ARGV) if __FILE__ == $PROGRAM_NAME

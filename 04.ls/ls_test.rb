@@ -13,20 +13,19 @@ class LsTest < Minitest::Test
       03   08
       04   09999
     TEXT
-    assert_output(text) { ls([test_dir_path]) }
+    assert_equal text, ls([test_dir_path])
   end
 
   def test_ls_no_files
     test_dir_path = './test_dir/.fuga'
-    text = ''
-    assert_output(text) { ls([test_dir_path]) }
+    assert_nil ls([test_dir_path])
   end
 
   def test_ls_nopath
     text = <<~TEXT
       ls.rb  ls_test.rb  test_dir
     TEXT
-    assert_output(text) { ls }
+    assert_equal text, ls
   end
 
   def test_ls_with_a_option
@@ -40,6 +39,19 @@ class LsTest < Minitest::Test
       000    06  nyannyan
       01     07
     TEXT
-    assert_output(text) { ls([test_dir_path, option]) }
+    assert_equal text, ls([test_dir_path, option])
+  end
+
+  def test_ls_with_r_option
+    test_dir_path = './test_dir'
+    option = '-r'
+    text = <<~TEXT
+      nyannyan  07  02
+      hoge      06  01
+      fugafuga  05  000
+      09999     04
+      08        03
+    TEXT
+    assert_equal text, ls([test_dir_path, option])
   end
 end
